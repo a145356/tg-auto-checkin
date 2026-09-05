@@ -18,7 +18,7 @@ async def main():
     api_hash = os.environ['API_HASH']
     session_b64 = os.environ['TG_SESSION_B64']
     group_ids = [int(g.strip()) for g in os.environ['GROUP_IDS'].split(',') if g.strip()]
-    message = os.environ.get('CHECKIN_MESSAGE', '签到')
+    message = os.environ.get('/checkin', '/签到')
 
     os.makedirs('session', exist_ok=True)
     session_path = 'session/action_session.session'
