@@ -13,16 +13,29 @@ def check_env():
 
 async def main():
     check_env()
-
+    
     api_id = int(os.environ['API_ID'])
     api_hash = os.environ['API_HASH']
     session_b64 = os.environ['TG_SESSION_B64']
-    group_ids = [int(g.strip()) for g in os.environ['GROUP_IDS'].split(',') if g.strip()]
-    message = os.environ.get('/checkin', '/签到')
+    message = os.environ.get('CHECKIN_MESSAGE', '签到')
+
+    # 【核心优化】支持纯数字ID、带负数的群组ID、以及 @用户名
+    raw_groups = os.environ['GROUP_IDS'].split(',')
+    group_ids = []
+    for g in raw_groups:
+        g_clean = g.strip()
+        if not g_clean:
+            continue
+        # 如果是纯数字（或者带负号的群组数字ID），转为 int 整数
+        if g_clean.lstrip('-').isdigit():
+            group_ids.append(int(g_clean))
+        else:
+            # 如果是用户名（如 @supersong_bot），保持字符串
+            group_ids.append(g_clean)
 
     os.makedirs('session', exist_ok=True)
     session_path = 'session/action_session.session'
-
+    
     try:
         with open(session_path, 'wb') as f:
             f.write(base64.b64decode(session_b64))
@@ -44,9 +57,9 @@ async def main():
     for g_id in group_ids:
         try:
             await client.send_message(g_id, message)
-            print(f"✈️ 成功向群组 [{g_id}] 发送消息: '{message}'")
+            print(f"✈️ 成功向目标 [{g_id}] 发送消息: '{message}'")
         except Exception as e:
-            print(f"❌ 向群组 [{g_id}] 发送失败，原因: {e}")
+            print(f"❌ 向目标 [{g_id}] 发送失败，原因: {e}")
         await asyncio.sleep(2)
 
     print("🔒 任务完成，正在安全断开连接...")
