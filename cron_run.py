@@ -17,7 +17,7 @@ async def main():
     api_id = int(os.environ['API_ID'])
     api_hash = os.environ['API_HASH']
     session_b64 = os.environ['TG_SESSION_B64']
-    message = os.environ.get('CHECKIN_MESSAGE', '签到')
+    message = os.environ.get('CHECKIN_MESSAGE', '/checkin')
 
     # 【核心优化】支持纯数字ID、带负数的群组ID、以及 @用户名
     raw_groups = os.environ['GROUP_IDS'].split(',')
